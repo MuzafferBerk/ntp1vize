@@ -1,13 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Xml.Serialization;
 
 namespace MuzafferBerkDuzgun183801021NTP1Vize
 {
-    internal class Book
+    public class Book
     {
-        public string BookName { get; }
-        public string Author { get; }
-        public DateTime PublicationDate { get; }
-        public string Genre { get; }
+        public string BookName { get; set; }
+        public string Author { get; set; }
+        public DateTime PublicationDate { get; set; }
+        public string Genre { get; set; }
 
         #region Constructors
 
@@ -21,11 +24,26 @@ namespace MuzafferBerkDuzgun183801021NTP1Vize
 
         #endregion
 
-        internal static void SaveBook()
+        internal static void SaveBook(Book book)
         {
+            string path = @".\books";
             try
             {
+                BookList bookList;
 
+                if (!File.Exists(path))
+                {
+                    bookList = new BookList();
+                    bookList.books = new List<SerializedBook>();
+                }
+                else
+                {
+                    bookList = XmlSerialization.ReadFromXmlFile<BookList>(path);
+                }
+
+                var serializedBook = new SerializedBook(book);
+                bookList.books.Add(serializedBook);
+                XmlSerialization.WriteToXmlFile<BookList>( path, bookList);
             }
             catch (Exception e)
             {
@@ -34,5 +52,29 @@ namespace MuzafferBerkDuzgun183801021NTP1Vize
             }
         }
 
+    }
+
+    [Serializable]
+    public class SerializedBook
+    {
+        public string BookName, Author, PublicationDate, Genre;
+
+        public SerializedBook()
+        {
+            
+        }
+        public SerializedBook(Book bookToSerialize)
+        {
+            BookName = bookToSerialize.BookName;
+            Author = bookToSerialize.Author;
+            PublicationDate = bookToSerialize.PublicationDate.Year.ToString();
+            Genre = bookToSerialize.Genre;
+        }
+    }
+
+    [Serializable]
+    public class BookList
+    {
+        public List<SerializedBook> books;
     }
 }
