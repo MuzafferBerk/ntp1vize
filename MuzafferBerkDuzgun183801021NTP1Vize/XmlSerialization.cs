@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Xml.Serialization;
 
 namespace MuzafferBerkDuzgun183801021NTP1Vize
@@ -47,8 +48,20 @@ namespace MuzafferBerkDuzgun183801021NTP1Vize
                 reader = new StreamReader(filePath);
                 return (T) serializer.Deserialize(reader);
             }
+            catch(Exception e)
+            {
+                Console.Clear();
+                Console.WriteLine("Listeyi görüntülemek için veritabanına en az 1 geçerli kitap eklemelisiniz.");
+                Console.WriteLine("Devam etmek icin ENTER");
+                Console.ReadLine();
+                ConsoleHandler.Instance().Open_Menu_Main();
+
+                object newtype = null;
+                return (T) newtype;
+            }
             finally
             {
+                
                 if (reader != null)
                     reader.Close();
             }
